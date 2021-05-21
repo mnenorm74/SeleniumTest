@@ -59,13 +59,13 @@ namespace SeleniumTest
             for (var i = 1; i < rows.Count + 1; i++)
             {
                 var line = GetElement(driver, By.CssSelector($".table tbody tr:nth-child({i})"));
-                Assert.IsTrue(!(line is null), $"Строка {i} таблицы не найдена");
+                Assert.IsTrue(line is not null, $"Строка {i} таблицы не найдена");
                 var zonesCount = line.FindElements(By.CssSelector("td"))[5].Text;
                 
                 if (!zonesCount.Equals("0"))
                 {
                     var linkToCountrySettings = GetElement(line, By.CssSelector("a"));
-                    Assert.IsTrue(!(linkToCountrySettings is null), $"Ссылка в строке таблицы {i} не найдена");
+                    Assert.IsTrue(linkToCountrySettings is not null, $"Ссылка в строке таблицы {i} не найдена");
                     linkToCountrySettings.Click();
                     
                     var zonesLines = driver.FindElements(By.CssSelector(".table tbody tr"));
@@ -90,7 +90,7 @@ namespace SeleniumTest
             for (var i = 1; i < rows.Count + 1; i++)
             {
                 var countryLink = GetElement(driver, By.CssSelector($".table tbody tr:nth-child({i}) a"));
-                Assert.IsTrue(!(countryLink is null), $"Ссылка в строке таблицы {i} не найдена");
+                Assert.IsTrue(countryLink is not null, $"Ссылка в строке таблицы {i} не найдена");
                 countryLink.Click();
                 
                 var zones = driver.FindElements(By.CssSelector(".table tbody tr"));
@@ -114,7 +114,7 @@ namespace SeleniumTest
             foreach (var line in collection)
             {
                 var element = GetElement(line, elementSelector);
-                Assert.IsTrue(!(element is null), $"Элемент {elementSelector} не найден");
+                Assert.IsTrue(element is not null, $"Элемент {elementSelector} не найден");
                 
                 var elementText = element.GetAttribute(textAttribute);
                 Assert.IsTrue(previousElementText.CompareTo(elementText) <= 0,
