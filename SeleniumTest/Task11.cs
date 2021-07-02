@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using SeleniumExtras.WaitHelpers;
+using static SeleniumTest.ElementsInteraction;
+using static SeleniumTest.RandomGenerator;
 
 namespace SeleniumTest
 {
@@ -18,7 +19,7 @@ namespace SeleniumTest
         private const string mainPage = "http://localhost/litecart/";
         private const string adminPage = "http://localhost/litecart/admin/";
         private const string securityPage = "http://localhost/litecart/admin/?app=settings&doc=security";
-        
+
         [SetUp]
         public void Setup()
         {
@@ -27,7 +28,7 @@ namespace SeleniumTest
             DisableCaptcha();
             driver.Url = mainPage;
         }
-        
+
         /// <summary>
         /// Проверка регистрации нового пользователя:
         /// 1. Регистрация новой учётной записи с достаточно уникальным адресом электронной почты
@@ -46,9 +47,9 @@ namespace SeleniumTest
             wait.Until(ExpectedConditions.UrlToBe(mainPage));
             LogOut();
             LogInByUser(email, password);
-            LogOut(); 
+            LogOut();
         }
-        
+
         /// <summary>
         /// Принятие куки
         /// </summary>
@@ -57,7 +58,7 @@ namespace SeleniumTest
             var acceptButton = GetElement(driver, By.Name("accept_cookies"));
             acceptButton?.Click();
         }
-        
+
         /// <summary>
         /// Отключение капчи
         /// </summary>
@@ -159,126 +160,7 @@ namespace SeleniumTest
             Assert.IsTrue(submitButton is not null, "Кнопка отправки формы не найдена");
             submitButton.Click();
         }
-
-        /// <summary>
-        /// Генерация случайного e-mail
-        /// </summary>
-        /// <param name="firstPartLength">Длина первой части (по умолчанию 15)</param>
-        /// <param name="secondPartLength">Длина второй части - доменной (по умолчанию 10)</param>
-        /// <returns></returns>
-        private string GetRandomEmail(int firstPartLength = 15, int secondPartLength = 10)
-        {
-            var firstPart = GetRandomString(firstPartLength);
-            var secondPart = GetRandomString(secondPartLength);
-            
-            return new StringBuilder()
-                .Append(firstPart)
-                .Append('@')
-                .Append(secondPart)
-                .Append(".ru")
-                .ToString();
-        }
         
-        /// <summary>
-        /// Генерация случайного пароля
-        /// </summary>
-        /// <param name="length">Длина пароля (по умолчанию 12)</param>
-        /// <returns></returns>
-        private string GetRandomPassword(int length = 12)
-        {
-            var password = new StringBuilder();
-            for (var i = 0; i < length; i++)
-            {
-                password.Append(GetRandomChar());
-            }
-
-            return password.ToString();
-        }
-        
-        /// <summary>
-        /// Генерация случайной строки
-        /// </summary>
-        /// <param name="length">Длина строки (по умолчанию 10)</param>
-        /// <returns></returns>
-        private string GetRandomString(int length = 10)
-        {
-            var line = new StringBuilder();
-            for (var i = 0; i < length; i++)
-            {
-                line.Append(GetRandomLetter());
-            }
-
-            return line.ToString();
-        }
-
-        /// <summary>
-        /// Генерация случайной буквы от 'a' до 'z'
-        /// </summary>
-        /// <returns></returns>
-        private char GetRandomLetter()
-        {
-            var random = new Random();
-            return (char) random.Next('a', 'z');
-        }
-
-        /// <summary>
-        /// Генерация случайного символа
-        /// </summary>
-        /// <param name="startIndex">Стартовый индекс кода ascii символа (по умолчанию 32 = пробел)</param>
-        /// <param name="endIndex">Конечный индекс кода ascii символа (по умолчанию 126 = ~)</param>
-        /// <returns></returns>
-        private char GetRandomChar(int startIndex = 32, int endIndex = 126)
-        {
-            var random = new Random();
-            return (char) random.Next(startIndex, endIndex);
-        }
-        
-        /// <summary>
-        /// Получает элемент страницы
-        /// </summary>
-        /// <param name="searchContext">Контекст поиска</param>
-        /// <param name="selector">Селектор для поиска</param>
-        /// <returns>Элемент или null</returns>
-        private IWebElement GetElement(ISearchContext searchContext, By selector)
-        {
-            try
-            {
-                return searchContext.FindElement(selector);
-            }
-            catch (NoSuchElementException)
-            {
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Заполняет поле заданным значением
-        /// </summary>
-        /// <param name="searchContext">Контекст поиска</param>
-        /// <param name="selector">Селектор для поиска поля</param>
-        /// <param name="value">Значение для заполнения</param>
-        private void SetField(ISearchContext searchContext, By selector, string value)
-        {
-            var field = GetElement(searchContext, selector);
-            Assert.IsTrue(field is not null, $"Поле {selector} не найдено");
-            field.Clear();
-            field.SendKeys(value);
-        }
-
-        /// <summary>
-        /// Выбирает значение из дропдауна по заданному тексту
-        /// </summary>
-        /// <param name="searchContext">Контекст поиска</param>
-        /// <param name="selector">Селектор для поиска дропдауна</param>
-        /// <param name="text">Текст для выбора значения</param>
-        private void SelectValueByText(ISearchContext searchContext, By selector, string text)
-        {
-            var dropdown = GetElement(searchContext, selector);
-            Assert.IsTrue(dropdown is not null, $"Поле {selector} не найдено");
-            var dropdownSelectElement = new SelectElement(dropdown);
-            dropdownSelectElement.SelectByText(text);
-        }
-
         [TearDown]
         public void Teardown()
         {
