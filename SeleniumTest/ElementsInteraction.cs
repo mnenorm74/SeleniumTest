@@ -1,4 +1,7 @@
-﻿using NUnit.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 
@@ -50,6 +53,21 @@ namespace SeleniumTest
             Assert.IsTrue(dropdown is not null, $"Поле {selector} не найдено");
             var dropdownSelectElement = new SelectElement(dropdown);
             dropdownSelectElement.SelectByText(text);
+        }
+        
+        /// <summary>
+        /// Возвращает новое открытое окно (первое отличное от ранее существующих)
+        /// </summary>
+        /// <param name="oldWindows">Коллекция существующих открытых окон</param>
+        /// <returns></returns>
+        public static Func<IWebDriver, string> GetNewOpenWindow(IEnumerable<string> oldWindows)
+        {
+            return driver =>
+            {
+                var currentWindows = driver.WindowHandles;
+                var newWindows = currentWindows.Except(oldWindows);
+                return newWindows.Any() ? newWindows.First() :  null;
+            };
         }
     }
 }
